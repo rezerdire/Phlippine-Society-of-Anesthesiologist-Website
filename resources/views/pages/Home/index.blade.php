@@ -14,5 +14,5 @@ new class extends Component
     <x-hero-section />
     <x-mission-vision-section />
     <x-recent-events />
-    <x-contact-form />
+    <x-contact-section />
 @endsection
