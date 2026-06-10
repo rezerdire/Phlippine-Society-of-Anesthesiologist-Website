@@ -9,7 +9,7 @@ new class extends Component {};
 
 <div class="sticky top-0 z-30 bg-white ">
     <div class="max-w-6xl mx-auto px-6">
-        <nav class="flex gap-0 overflow-x-auto" role="tablist">
+        <nav class="flex gap-0 overflow-x-auto" role="tablist" x-cloack>
 
             @foreach($tabs as $tab)
                 <button @click="activeTab = '{{ $tab['key'] }}'" :class="activeTab === '{{ $tab['key'] }}'

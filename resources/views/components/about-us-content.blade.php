@@ -15,7 +15,7 @@ new class extends Component
         <div
             x-show="activeTab === '{{ $panel['key'] }}'"
             @if(!$loop->first) 
-            x-cloak {{-- WHEN THE PAGE IS LOADIN IT WILL HIDE THE RAW STRUCTURE --}}
+            x-cloak {{-- hide the raw structure if it loads--}}
             @endif
             x-transition:enter="transition ease-out duration-200" 
             x-transition:enter-start="opacity-0 translate-y-2"
