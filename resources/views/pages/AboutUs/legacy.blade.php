@@ -10,6 +10,7 @@ new class extends Component
 
 @section('title', 'Legacy')
 @extends('layouts.app')
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 
 <div x-data="{ activeTab: 'past-presidents' }" class="bg-white min-h-screen">
 {{-- default tab --}}

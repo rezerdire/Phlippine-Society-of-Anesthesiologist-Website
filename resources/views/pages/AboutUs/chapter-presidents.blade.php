@@ -7,6 +7,7 @@ new class extends Component
     //
 };
 ?>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
 @section('title', 'Chapter Presidents')
 @extends('layouts.app')
 
