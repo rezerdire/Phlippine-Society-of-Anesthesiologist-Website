@@ -19,9 +19,9 @@ new class extends Component
 {{-- Main Content --}}
 <livewire:event-registration.psa-checker />
             {{-- Registration Form Card --}}
-            {{-- <x-event-registration.form-layout>
-                <x-event-registration.event-reg-form />
-            </x-event-registration.event-registration-layout> --}}
+            <x-event-registration.form-layout>
+                <livewire:event-registration.event-reg-form />
+            </x-event-registration.event-registration-layout>
 
 </x-event-registration.event-registration-layout>
 @endsection 

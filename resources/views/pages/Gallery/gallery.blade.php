@@ -12,5 +12,7 @@ new class extends Component
 @extends('layouts.app')
 
 @section('content')
-     <livewire:gallery-component />
+     {{-- <livewire:gallery-component /> --}}
+         <livewire:event-registration.registered-list />
+
 @endsection

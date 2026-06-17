@@ -8,57 +8,29 @@ class Registration extends Model
 {
     protected $table = 'registrations';
 
+    const STATUS_PENDING  = 'Pending';
+    const STATUS_APPROVED = 'Approved';
+    const STATUS_REJECTED = 'Rejected';
+
     protected $fillable = [
-        'psa_id',
-        'prc_number',
-        'last_name',
-        'first_name',
-        'middle_name',
-        'hospital_name',
-        'hospital_address',
-        'email',
-        'contact_number',
-        'gender',
-        'membership',
-        'discount_id',
-        'proof_payment',
-        'status',
-        'country',
+        'psa_id', 'prc_number', 'last_name', 'first_name', 'middle_name',
+        'hospital_name', 'hospital_address', 'email', 'contact_number',
+        'gender', 'membership', 'discount_id', 'proof_payment',
+        'status', 'country',
     ];
 
-    protected $casts = [
-        'prc_number' => 'integer',
-    ];
+    protected $casts = ['prc_number' => 'integer'];
 
-    // Scopes
-    public function scopePending($query)
-    {
-        return $query->where('status', 'Pending');
-    }
+    public function scopePending($query)  { return $query->where('status', self::STATUS_PENDING); }
+    public function scopeApproved($query) { return $query->where('status', self::STATUS_APPROVED); }
+    public function scopeRejected($query) { return $query->where('status', self::STATUS_REJECTED); }
 
-    public function scopeApproved($query)
-    {
-        return $query->where('status', 'Approved');
-    }
-
-    // Helpers
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->middle_name} {$this->last_name}";
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
     }
 
-    public function hasDiscount(): bool
-    {
-        return !is_null($this->discount_id);
-    }
-
-    public function isPending(): bool
-    {
-        return $this->status === 'Pending';
-    }
-
-    public function isApproved(): bool
-    {
-        return $this->status === 'Approved';
-    }
+    public function isPending(): bool   { return $this->status === self::STATUS_PENDING; }
+    public function isApproved(): bool  { return $this->status === self::STATUS_APPROVED; }
+    public function hasDiscount(): bool { return !is_null($this->discount_id); }
 }
