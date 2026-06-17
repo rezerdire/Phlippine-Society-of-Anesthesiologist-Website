@@ -1,4 +1,3 @@
-{{-- resources/views/livewire/event-registration/event-reg-form.blade.php --}}
 <?php
 
 use App\Models\Member;
@@ -11,18 +10,18 @@ new class extends Component {
 
     use WithFileUploads;
 
-    //  Step 1: PSA Verification 
+    // PSA Verification
     public string $psaId          = '';
     public bool   $memberVerified = false;
     public string $verifyError    = '';
 
-    //  Auto-filled from members table 
+    // Auto-filled from members table
     public string $firstName  = '';
     public string $lastName   = '';
     public string $middleName = '';
     public string $membership = '';
 
-    // Contact Details 
+    // Contact Details
     public string $prcNumber       = '';
     public string $email           = '';
     public string $contactNumber   = '';
@@ -31,7 +30,7 @@ new class extends Component {
     public string $gender          = '';
     public string $country         = '';
 
-    //  Discount & Payment 
+    // Discount & Payment
     public string $discountType = 'non_disc';
     public        $discountImg  = null;
     public        $paymentProof = null;
@@ -45,7 +44,6 @@ new class extends Component {
         'TM' => 'Trainee Member',
     ];
 
-    //  Verify 
     public function verify(): void
     {
         $this->validate(
@@ -93,7 +91,6 @@ new class extends Component {
         $this->membership     = '';
     }
 
-    // Validation Rules 
     protected function rules(): array
     {
         return [
@@ -121,7 +118,6 @@ new class extends Component {
         ];
     }
 
-    //  Submit 
     public function submit(): void
     {
         if (!$this->memberVerified) {
@@ -186,11 +182,9 @@ new class extends Component {
 {{-- FRONTEND --}}
 <div class="p-6 md:p-10">
 
-    {{--  Success Confirmation --}}
     @if ($submitted)
         <div class="max-w-lg mx-auto py-10">
 
-            {{-- Icon --}}
             <div class="flex justify-center mb-6">
                 <div class="w-20 h-20 rounded-full flex items-center justify-center" style="background-color: #e8f5e9;">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" style="color: #2e7d32;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -199,7 +193,6 @@ new class extends Component {
                 </div>
             </div>
 
-            {{-- Heading --}}
             <div class="text-center mb-8">
                 <h2 class="text-2xl font-bold mb-2" style="color: #000066;">Registration Submitted!</h2>
                 <p class="text-gray-500 text-sm">
@@ -207,7 +200,6 @@ new class extends Component {
                 </p>
             </div>
 
-            {{-- Summary Card --}}
             <div class="rounded-2xl border border-gray-100 overflow-hidden mb-6">
                 <div class="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white" style="background-color: #000066;">
                     Registration Summary
@@ -233,7 +225,6 @@ new class extends Component {
                 </div>
             </div>
 
-            {{-- Note --}}
             <div class="rounded-xl border border-blue-100 bg-blue-50 px-5 py-4 flex gap-3 mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z" />
@@ -243,7 +234,6 @@ new class extends Component {
                 </p>
             </div>
 
-            {{-- Done button --}}
             <div class="flex justify-center">
                 <a href="{{ url('/') }}"
                     class="px-8 py-3 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
@@ -255,12 +245,11 @@ new class extends Component {
         </div>
 
     @else
-    {{--  Form --}}
 
         <h2 class="text-xl font-bold mb-1" style="color: #000066;">Registration Form</h2>
         <p class="text-gray-400 text-sm mb-8">All fields are required unless stated otherwise.</p>
 
-        {{--  PSA ID Verification --}}
+        {{-- PSA ID Verification --}}
         <div class="mb-8">
             <x-event-registration.section-title title="Step 1 - Verify PSA ID" />
 
@@ -274,7 +263,7 @@ new class extends Component {
                             placeholder="Enter your 4-digit PSA ID"
                             maxlength="4"
                             inputmode="numeric"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm  focus:outline-none focus:ring-2 focus:ring-[#000066]">
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
                         @error('psaId') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                         @if ($verifyError)
                             <p class="text-xs text-red-500 mt-1">{{ $verifyError }}</p>
@@ -283,7 +272,7 @@ new class extends Component {
                     <button type="button" wire:click="verify" wire:loading.attr="disabled" wire:target="verify"
                         class="shrink-0 px-5 py-3 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
                         style="background-color: #000066;">
-                        <span wire:loading.remove wire:target="verify">Verify →</span>
+                        <span wire:loading.remove wire:target="verify">Verify</span>
                         <span wire:loading wire:target="verify">Checking…</span>
                     </button>
                 </div>
@@ -314,7 +303,6 @@ new class extends Component {
             @endif
         </div>
 
-        {{-- Locked notice --}}
         @if (!$memberVerified)
             <div class="rounded-xl border border-yellow-100 bg-yellow-50 px-5 py-4 flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -326,115 +314,86 @@ new class extends Component {
 
             <form wire:submit="submit">
 
-                {{--  Member Information --}}
+                {{-- Member Information --}}
                 <div class="mb-8">
                     <x-event-registration.section-title title="Member Information" />
                     <div class="grid grid-cols-1 sm:grid-cols-6 gap-4">
                         <div class="sm:col-span-1">
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">PSA ID No.</label>
-                            <input type="text" value="{{ $psaId }}" readonly
-                                class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed font-mono">
+                            <x-form.readonly-field label="PSA ID No." :value="$psaId" mono />
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">First Name</label>
-                            <input type="text" value="{{ $firstName }}" readonly
-                                class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+                            <x-form.readonly-field label="First Name" :value="$firstName" />
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Last Name</label>
-                            <input type="text" value="{{ $lastName }}" readonly
-                                class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+                            <x-form.readonly-field label="Last Name" :value="$lastName" />
                         </div>
                         <div class="sm:col-span-1">
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Middle Name</label>
-                            <input type="text" value="{{ $middleName }}" readonly
-                                class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+                            <x-form.readonly-field label="Middle Name" :value="$middleName" />
                         </div>
                     </div>
                 </div>
 
-                {{--  Contact Details --}}
+                {{-- Contact Details --}}
                 <div class="mb-8">
                     <x-event-registration.section-title title="Contact Details" />
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">PRC Number <span class="text-gray-400">(7 digits)</span></label>
-                            <input type="text" wire:model="prcNumber" placeholder="1234567" maxlength="7" inputmode="numeric"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('prcNumber') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Email Address</label>
-                            <input type="email" wire:model="email" placeholder="you@example.com"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('email') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Contact Number</label>
-                            <input type="text" wire:model="contactNumber" placeholder="09XXXXXXXXX" inputmode="numeric"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('contactNumber') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form.input label="PRC Number" hint="(7 digits)" name="prcNumber" wire:model="prcNumber"
+                            placeholder="1234567" maxlength="7" inputmode="numeric" />
+
+                        <x-form.input label="Email Address" type="email" name="email" wire:model="email"
+                            placeholder="you@example.com" />
+
+                        <x-form.input label="Contact Number" name="contactNumber" wire:model="contactNumber"
+                            placeholder="09XXXXXXXXX" inputmode="numeric" maxlength="11" />
+
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Hospital / Institution Name</label>
-                            <input type="text" wire:model="hospitalName" placeholder="Name of Hospital"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('hospitalName') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <x-form.input label="Hospital / Institution Name" name="hospitalName" wire:model="hospitalName"
+                                placeholder="Name of Hospital" />
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Hospital Address</label>
-                            <input type="text" wire:model="hospitalAddress" placeholder="City, Province"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('hospitalAddress') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Gender</label>
-                            <select wire:model="gender"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                                <option value="">Select…</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            @error('gender') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1.5">Country</label>
-                            <input type="text" wire:model="country" placeholder="Philippines"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
-                            @error('country') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-                        </div>
+
+                        <x-form.input label="Hospital Address" name="hospitalAddress" wire:model="hospitalAddress"
+                            placeholder="City, Province" />
+
+                        <x-form.select label="Gender" name="gender" wire:model="gender">
+                            <option value="">Select…</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </x-form.select>
+
+                        <x-form.input label="Country" name="country" wire:model="country" placeholder="Philippines" />
                     </div>
                 </div>
 
-                {{--  Membership & Discount --}}
+                {{-- Membership & Discount --}}
                 <div class="mb-8">
                     <x-event-registration.section-title title="Membership & Discount" />
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-3">Registration Type</label>
                             <div class="space-y-2">
                                 @foreach ([['RM', 'Regular Member'], ['LM', 'Life Member'], ['TM', 'Trainee Member']] as [$code, $label])
-                                    <label class="flex items-center gap-3 px-4 py-3 rounded-lg border {{ $membership === $code ? 'border-blue-200 bg-blue-50' : 'border-gray-100 bg-gray-50' }} cursor-not-allowed">
-                                        <input type="radio" disabled {{ $membership === $code ? 'checked' : '' }} class="accent-blue-800">
-                                        <span class="text-sm {{ $membership === $code ? 'font-semibold text-blue-900' : 'text-gray-400' }}">{{ $label }}</span>
-                                    </label>
+                                    <x-form.radio-option
+                                        :value="$code"
+                                        :label="$label"
+                                        :active="$membership === $code"
+                                        :disabled="true"
+                                        color="blue" />
                                 @endforeach
                             </div>
                             <p class="text-xs text-gray-400 mt-2">* Auto-filled from your PSA membership record</p>
                         </div>
+
                         <div x-data="{ disc: @entangle('discountType') }">
                             <label class="block text-xs font-medium text-gray-500 mb-3">Discount</label>
                             <div class="space-y-2 mb-4">
                                 @foreach ([['senior_disc', 'Senior Citizen'], ['non_disc', 'None']] as [$value, $label])
-                                    <label
-                                        class="flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition"
-                                        :class="disc === '{{ $value }}' ? 'border-red-200 bg-red-50' : 'border-gray-100 hover:border-gray-300'">
-                                        <input type="radio" value="{{ $value }}" x-model="disc" class="accent-red-700">
-                                        <span class="text-sm" :class="disc === '{{ $value }}' ? 'font-semibold text-red-900' : 'text-gray-600'">
-                                            {{ $label }}
-                                        </span>
-                                    </label>
+                                    <x-form.radio-option
+                                        :value="$value"
+                                        :label="$label"
+                                        model="disc"
+                                        color="red" />
                                 @endforeach
                             </div>
                             <div x-show="disc === 'senior_disc'" x-transition>
@@ -446,10 +405,11 @@ new class extends Component {
                                 @error('discountImg') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
+
                     </div>
                 </div>
 
-                {{--  Proof of Payment --}}
+                {{-- Proof of Payment --}}
                 <div class="mb-10">
                     <x-event-registration.section-title title="Proof of Payment" />
                     <x-event-registration.image-upload

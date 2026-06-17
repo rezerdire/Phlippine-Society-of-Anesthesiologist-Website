@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Registration extends Model
 {
@@ -33,4 +34,11 @@ class Registration extends Model
     public function isPending(): bool   { return $this->status === self::STATUS_PENDING; }
     public function isApproved(): bool  { return $this->status === self::STATUS_APPROVED; }
     public function hasDiscount(): bool { return !is_null($this->discount_id); }
+
+    
+   public function member()
+    {
+        return $this->belongsTo(Member::class, 'psa_id', 'member_id_no');
+    }
 }
+

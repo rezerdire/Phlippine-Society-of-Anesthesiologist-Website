@@ -2,7 +2,7 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
-use App\Models\Registration;
+use App\Models\Member;
 
 new class extends Component
 {
@@ -23,9 +23,9 @@ new class extends Component
         // retrieving the last name
         //without the computed: $this->results() = query
         //trim remove the white space before requesting query
-        return Registration::where('last_name', 'like', '%' . trim($this->lastName) . '%')
-            ->orderBy('last_name')
-            ->get(['psa_id', 'last_name', 'first_name', 'middle_name']);
+        return Member::where('mem_last_name', 'like', '%' . trim($this->lastName) . '%')
+            ->orderBy('mem_last_name')
+            ->get(['member_id_no', 'mem_last_name', 'mem_first_name', 'mem_middle_name']);
     }
 };
 ?>
@@ -85,17 +85,17 @@ new class extends Component
                     <div class="border border-dashed border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 text-center">
                         No members found for "{{ $lastName }}"
                     </div>
-
+                    
                 @else
                 {{-- retrieve the full name and psa id --}}
                     <ul class="border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-48 overflow-y-auto">
                         @foreach($this->results as $member)
                             <li class="px-3 py-2.5 flex items-center justify-between gap-2">
                                 <span class="text-sm text-gray-700 truncate">
-                                    {{ $member->last_name }}, {{ $member->first_name }} {{ $member->middle_name }}
+                                    {{ $member->mem_last_name }}, {{ $member->mem_first_name }} {{ $member->mem_middle_name }}
                                 </span>
                              <span class="text-xs font-mono font-semibold shrink-0 px-2 py-0.5 rounded bg-[#e8e8f7] text-[#000066]">
-                                    {{ $member->psa_id }}
+                                    {{ $member->member_id_no }}
                                 </span>
                             </li>
                         @endforeach
