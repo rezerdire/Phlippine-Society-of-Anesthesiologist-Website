@@ -5,6 +5,8 @@ use App\Models\Registration;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
+use App\Mail\RegistrationConfirmed;
+use Illuminate\Support\Facades\Mail;
 
 new class extends Component {
 
@@ -170,6 +172,8 @@ new class extends Component {
             'status'           => Registration::STATUS_PENDING,
             'country'          => $this->country,
         ]);
+        // SENDING CONFIRMATION EMAIL
+        Mail::to($this->email)->send(new RegistrationConfirmed($registration));
 
         $this->registrationId = (string) $registration->id;
         $this->submitted      = true;

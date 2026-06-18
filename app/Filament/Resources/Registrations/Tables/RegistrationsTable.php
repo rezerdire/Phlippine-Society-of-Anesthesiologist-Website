@@ -67,9 +67,7 @@ class RegistrationsTable
                 TextColumn::make('member.mem_email_address')
                     ->label('Email (PSA Record)')
                     ->toggleable(isToggledHiddenByDefault: true),
-
-    
-
+                    
                 ImageColumn::make('proof_payment')
                     ->label('Payment')
                     ->disk('public')
