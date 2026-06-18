@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('mem_first_name', 50)->nullable();
             $table->string('mem_middle_name', 11)->nullable();
             $table->string('mem_email_address', 56)->nullable();
-            $table->string('mem_gender', 6)->nullable();
             $table->string('password', 54)->nullable();
             $table->integer('bal')->nullable();
             $table->timestamps();

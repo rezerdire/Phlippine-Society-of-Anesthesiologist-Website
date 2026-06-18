@@ -15,8 +15,7 @@ class Registration extends Model
 
     protected $fillable = [
         'psa_id', 'prc_number', 'last_name', 'first_name', 'middle_name',
-        'hospital_name', 'hospital_address', 'email', 'contact_number',
-        'gender', 'membership', 'discount_id', 'proof_payment',
+        'hospital_name', 'hospital_address', 'email', 'contact_number', 'membership', 'discount_id', 'proof_payment',
         'status', 'country',
     ];
 
@@ -41,4 +40,6 @@ class Registration extends Model
         return $this->belongsTo(Member::class, 'psa_id', 'member_id_no');
     }
 }
+
+
 

@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('hospital_address');
             $table->string('email');
             $table->string('contact_number');
-            $table->string('gender');
             $table->string('membership');
             $table->string('discount_id')->nullable();
             $table->string('proof_payment')->nullable();

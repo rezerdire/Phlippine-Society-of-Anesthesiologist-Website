@@ -22,7 +22,6 @@ class Member extends Model
         'mem_first_name',
         'mem_middle_name',
         'mem_email_address',
-        'mem_gender',
         'bal',
     ];
 

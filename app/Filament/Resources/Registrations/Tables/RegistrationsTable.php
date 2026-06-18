@@ -4,11 +4,14 @@ namespace App\Filament\Resources\Registrations\Tables;
 
 use App\Models\Member;
 use App\Models\Registration;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -22,6 +25,8 @@ class RegistrationsTable
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            ->recordAction('view_record')
+             ->recordUrl(null)          
             ->columns([
 
                 TextColumn::make('id')
@@ -38,18 +43,10 @@ class RegistrationsTable
                     ->color('primary')
                     ->searchable(),
 
-                // ── Combined full name (uses Registration::getFullNameAttribute) ──
                 TextColumn::make('full_name')
                     ->label('Full Name')
                     ->searchable(['first_name', 'last_name', 'middle_name'])
                     ->sortable(['last_name', 'first_name']),
-
-                // ── From members table via belongsTo ──
-                TextColumn::make('member.psa_chapter_code')
-                    ->label('Chapter')
-                    ->badge()
-                    ->color('gray')
-                    ->sortable(),
 
                 TextColumn::make('membership')
                     ->label('Type')
@@ -67,20 +64,12 @@ class RegistrationsTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('email')
-                    ->label('Email')
-                    ->searchable()
-                    ->toggleable(),
-
                 TextColumn::make('member.mem_email_address')
                     ->label('Email (PSA Record)')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('contact_number')
-                    ->label('Contact')
-                    ->toggleable(),
+    
 
-                // ── Payment proof thumbnail ──
                 ImageColumn::make('proof_payment')
                     ->label('Payment')
                     ->disk('public')
@@ -88,7 +77,6 @@ class RegistrationsTable
                     ->width(64)
                     ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
 
-                // ── Discount ID thumbnail ──
                 ImageColumn::make('discount_id')
                     ->label('Discount ID')
                     ->disk('public')
@@ -120,15 +108,14 @@ class RegistrationsTable
                     ->toggleable(),
 
             ])
-
             ->filters([
-
                 SelectFilter::make('status')
                     ->options([
                         'Pending'  => 'Pending',
                         'Approved' => 'Approved',
                         'Rejected' => 'Rejected',
-                    ]),
+                    ])
+                    ->default('Pending'),
 
                 SelectFilter::make('membership')
                     ->label('Membership Type')
@@ -138,7 +125,6 @@ class RegistrationsTable
                         'TM' => 'Trainee Member',
                     ]),
 
-                // ── Distinct chapter codes only — no repeated options ──
                 SelectFilter::make('chapter')
                     ->label('Chapter')
                     ->options(fn () => Member::query()
@@ -161,10 +147,88 @@ class RegistrationsTable
             ])
 
             ->recordActions([
-              ViewAction::make()
-                ->modal()
-                ->modalWidth('5xl')
-                ->modalHeading(fn (Registration $r) => 'Registration #' . str_pad($r->id, 6, '0', STR_PAD_LEFT)),
+
+                Action::make('view_record')       
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(fn (Registration $r) => '' . $r->full_name)
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->infolist([
+
+                        Section::make('Personal Information')
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('psa_id')
+                                    ->label('PSA ID')
+                                    ->badge()
+                                    ->color('primary')
+                                    ->fontFamily('mono'),
+
+                                TextEntry::make('status')
+                                    ->label('Status')
+                                    ->badge()
+                                    ->color(fn ($state) => match ($state) {
+                                        'Approved' => 'success',
+                                        'Rejected' => 'danger',
+                                        'Pending'  => 'warning',
+                                        default    => 'gray',
+                                    }),
+
+                                TextEntry::make('full_name')
+                                    ->label('Full Name')
+                                    ->columnSpanFull(),
+
+                                TextEntry::make('membership')
+                                    ->label('Membership Type')
+                                    ->badge()
+                                    ->formatStateUsing(fn ($state) => match ($state) {
+                                        'RM'    => 'Regular Member',
+                                        'LM'    => 'Life Member',
+                                        'TM'    => 'Trainee Member',
+                                        default => $state,
+                                    })
+                                    ->color(fn ($state) => match ($state) {
+                                        'RM'    => 'info',
+                                        'LM'    => 'success',
+                                        'TM'    => 'warning',
+                                        default => 'gray',
+                                    }),
+
+                                TextEntry::make('email')
+                                    ->label('Email Address')
+                                    ->icon('heroicon-m-envelope'),
+
+                                TextEntry::make('contact_number')
+                                    ->label('Contact Number')
+                                    ->icon('heroicon-m-phone'),
+
+                                TextEntry::make('created_at')
+                                    ->label('Submitted At')
+                                    ->dateTime('F d, Y g:i A')
+                                    ->icon('heroicon-m-calendar')
+                                    ->columnSpanFull(),
+                            ]),
+
+                        Section::make('Attachments')
+                            ->columns(2)
+                            ->schema([
+                                ImageEntry::make('proof_payment')
+                                    ->disk('public')
+                                    ->label('Proof of Payment')
+                                    ->height(200)
+                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full']),
+
+                                ImageEntry::make('discount_id')
+                                    ->disk('public')
+                                    ->label('Senior Discount ID')
+                                    ->height(200)
+                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
+                                    ->placeholder('No discount ID uploaded'),
+                            ]),
+                    ])
+                    ->action(fn () => null),
 
                 Action::make('approve')
                     ->label('Approve')
@@ -187,20 +251,21 @@ class RegistrationsTable
                         $r->update(['status' => Registration::STATUS_REJECTED]);
                         Notification::make()->title('Registration rejected.')->danger()->send();
                     }),
+
             ])
 
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
 
-                    \Filament\Actions\BulkAction::make('approve_selected')
+                    BulkAction::make('approve_selected')
                         ->label('Approve Selected')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
                         ->action(fn ($records) => $records->each->update(['status' => Registration::STATUS_APPROVED])),
 
-                    \Filament\Actions\BulkAction::make('reject_selected')
+                    BulkAction::make('reject_selected')
                         ->label('Reject Selected')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')

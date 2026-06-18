@@ -42,7 +42,6 @@ new class extends Component
                 'members.mem_first_name',
                 'members.mem_middle_name',
                 'members.mem_email_address',
-                'members.mem_gender',
                 'registrations.id         as reg_id',
                 'registrations.status     as reg_status',
                 'registrations.created_at as registered_at',
@@ -66,7 +65,7 @@ new class extends Component
 
 <div>
 
-    {{-- ── Stats Bar ── --}}
+    {{--  Stats Bar  --}}
     @php
         $statTotal        = $this->stats['total'];
         $statRegistered   = $this->stats['registered'];
@@ -137,7 +136,6 @@ new class extends Component
                         <th class="px-5 py-3.5">Name</th>
                         <th class="px-5 py-3.5">Chapter</th>
                         <th class="px-5 py-3.5">Type</th>
-                        <th class="px-5 py-3.5">Gender</th>
                         <th class="px-5 py-3.5">Email</th>
                         <th class="px-5 py-3.5">Registered On</th>
                         <th class="px-5 py-3.5">Reg. Status</th>
@@ -187,11 +185,7 @@ new class extends Component
                                 </span>
                             </td>
 
-                            {{-- Gender --}}
-                            <td class="px-5 py-3.5 text-gray-500 text-xs">
-                                {{ $member->mem_gender ?: '—' }}
-                            </td>
-
+                         
                             {{-- Email --}}
                             <td class="px-5 py-3.5 text-xs text-gray-500 max-w-[180px] truncate">
                                 {{ $member->mem_email_address ?: '—' }}

@@ -6,6 +6,7 @@
         type="text"
         value="{{ $value }}"
         readonly
-        class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed {{ $mono ? 'font-mono' : '' }}"
-    >
+        class="w-full border border-gray-100 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-400 cursor-not-allowed {{ $mono ? 'font-mono' : '' }}">
 </div>
+
+{{-- dynamic value for label --}}

@@ -27,7 +27,6 @@ new class extends Component {
     public string $contactNumber   = '';
     public string $hospitalName    = '';
     public string $hospitalAddress = '';
-    public string $gender          = '';
     public string $country         = '';
 
     // Discount & Payment
@@ -105,7 +104,6 @@ new class extends Component {
             'contactNumber'   => ['required', 'digits_between:10,11'],
             'hospitalName'    => ['required', 'string', 'max:255'],
             'hospitalAddress' => ['required', 'string', 'max:255'],
-            'gender'          => ['required', Rule::in(['Male', 'Female', 'Other'])],
             'country'         => ['required', 'string', 'max:255'],
 
             'discountType'    => ['required', Rule::in(['senior_disc', 'non_disc'])],
@@ -166,7 +164,6 @@ new class extends Component {
             'hospital_address' => $this->hospitalAddress,
             'email'            => $this->email,
             'contact_number'   => $this->contactNumber,
-            'gender'           => $this->gender,
             'membership'       => $this->membership,
             'discount_id'      => $discountPath,
             'proof_payment'    => $paymentPath,
@@ -270,16 +267,15 @@ new class extends Component {
                         @endif
                     </div>
                     <button type="button" wire:click="verify" wire:loading.attr="disabled" wire:target="verify"
-                        class="shrink-0 px-5 py-3 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                        style="background-color: #000066;">
+                        class="shrink-0 px-5 py-3 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 bg-[#000066]">
                         <span wire:loading.remove wire:target="verify">Verify</span>
                         <span wire:loading wire:target="verify">Checking…</span>
                     </button>
                 </div>
             @else
-                <div class="flex items-center justify-between gap-4 bg-blue-50 border border-blue-100 rounded-xl px-5 py-4">
+                <div class="flex items-center justify-between gap-4 bg-green-50 border border-blue-100 rounded-xl px-5 py-4">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background-color: #000066;">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-green-800">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
@@ -354,13 +350,6 @@ new class extends Component {
                         <x-form.input label="Hospital Address" name="hospitalAddress" wire:model="hospitalAddress"
                             placeholder="City, Province" />
 
-                        <x-form.select label="Gender" name="gender" wire:model="gender">
-                            <option value="">Select…</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </x-form.select>
-
                         <x-form.input label="Country" name="country" wire:model="country" placeholder="Philippines" />
                     </div>
                 </div>
@@ -371,7 +360,7 @@ new class extends Component {
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-3">Registration Type</label>
+                            <label class="block text-xs font-medium text-gray-500 mb-3">Membership Type</label>
                             <div class="space-y-2">
                                 @foreach ([['RM', 'Regular Member'], ['LM', 'Life Member'], ['TM', 'Trainee Member']] as [$code, $label])
                                     <x-form.radio-option
@@ -388,7 +377,7 @@ new class extends Component {
                         <div x-data="{ disc: @entangle('discountType') }">
                             <label class="block text-xs font-medium text-gray-500 mb-3">Discount</label>
                             <div class="space-y-2 mb-4">
-                                @foreach ([['senior_disc', 'Senior Citizen'], ['non_disc', 'None']] as [$value, $label])
+                                @foreach ([['senior_disc', 'Senior Citizen/PWD'], ['non_disc', 'None']] as [$value, $label])
                                     <x-form.radio-option
                                         :value="$value"
                                         :label="$label"
@@ -424,9 +413,9 @@ new class extends Component {
                 {{-- Submit --}}
                 <div class="flex justify-end">
                     <button type="submit" wire:loading.attr="disabled" wire:target="submit"
-                        class="px-8 py-3 rounded-xl text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-50"
-                        style="background-color: #ac071a;">
-                        <span wire:loading.remove wire:target="submit">Submit Registration →</span>
+                        class="px-8 py-3 rounded-xl text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-50 
+                        bg-[#000066]">
+                        <span wire:loading.remove wire:target="submit">Submit Registration</span>
                         <span wire:loading wire:target="submit">Submitting…</span>
                     </button>
                 </div>
