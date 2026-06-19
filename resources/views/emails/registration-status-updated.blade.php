@@ -31,17 +31,21 @@
             ['Hospital',      $registration->hospital_name],
             ['Status',        $registration->status],
         ];
+
+        // Consistent type scale used throughout this email:
+        // 11px = eyebrow/labels, 12px = small body / info box, 13px = body / table values,
+        // 14px = card sub-heading, 22px = main heading
     @endphp
 
     <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 16px;">
         <tr>
-            <td align="center">
+            <td align="center" style="text-align:center;">
                 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
 
                     {{-- Logo / Header --}}
                     <tr>
-                        <td align="center" style="padding-bottom: 28px;">
-                            <p style="margin:0;font-size:13px;color:#6b7280;letter-spacing:0.05em;text-transform:uppercase;font-weight:600;">
+                        <td align="center" style="text-align:center;padding-bottom: 28px;">
+                            <p style="margin:0;font-size:11px;color:#6b7280;letter-spacing:0.05em;text-transform:uppercase;font-weight:600;text-align:center;">
                                 Philippine Society of Anesthesiologists
                             </p>
                         </td>
@@ -49,7 +53,7 @@
 
                     {{-- Status Icon --}}
                     <tr>
-                        <td align="center" style="padding-bottom: 20px;">
+                        <td align="center" style="text-align:center;padding-bottom: 20px;">
                             <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
                                 <tr>
                                     <td align="center" valign="middle"
@@ -66,15 +70,15 @@
 
                     {{-- Title --}}
                     <tr>
-                        <td align="center" style="padding-bottom: 6px;">
-                            <h1 style="margin:0;font-size:22px;font-weight:800;color:#374151;">
+                        <td align="center" style="text-align:center;padding-bottom: 6px;">
+                            <h1 style="margin:0;font-size:22px;font-weight:800;color:#374151;text-align:center;">
                                 {{ $title }}
                             </h1>
                         </td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding-bottom: 28px;">
-                            <p style="margin:0;font-size:13px;color:#9ca3af;max-width:400px;line-height:1.6;">
+                        <td align="center" style="text-align:center;padding-bottom: 28px;">
+                            <p style="margin:0 auto;font-size:13px;color:#9ca3af;max-width:400px;line-height:1.6;text-align:center;">
                                 @if ($isApproved)
                                     Great news, {{ $registration->first_name }}! Your registration for
                                     <strong style="color:#374151;">PSA Midyear Convention 2026</strong>
@@ -121,6 +125,36 @@
                         </td>
                     </tr>
 
+                    {{-- Rejection Title + Reason Card (only shown if admin wrote a custom message) --}}
+                    @if (!$isApproved && ($registration->rejection_title || $registration->rejection_reason))
+                        <tr>
+                            <td style="padding-bottom: 16px;">
+                                <table width="100%" cellpadding="0" cellspacing="0"
+                                       style="border:1px solid {{ $boxBorder }};border-radius:16px;overflow:hidden;background:#ffffff;">
+
+                                    @if ($registration->rejection_title)
+                                        <tr>
+                                            <td style="background-color:{{ $boxBg }};padding:12px 20px;border-bottom:1px solid {{ $boxBorder }};">
+                                                <p style="margin:0;font-size:13px;font-weight:700;color:{{ $boxText }};">
+                                                    {{ $registration->rejection_title }}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endif
+
+                                    @if ($registration->rejection_reason)
+                                        <tr>
+                                            <td style="padding:16px 20px;font-size:13px;color:#374151;line-height:1.7;">
+                                                {!! $registration->rejection_reason !!}
+                                            </td>
+                                        </tr>
+                                    @endif
+
+                                </table>
+                            </td>
+                        </tr>
+                    @endif
+
                     {{-- Info Box --}}
                     <tr>
                         <td style="padding-bottom: 28px;">
@@ -133,8 +167,9 @@
                                             We'll see you at the convention venue — further details will be shared
                                             closer to the event date.
                                         @else
-                                            If you have questions about this decision, please reach out to the
-                                            PSA secretariat and reference your PSA ID
+                                            You're welcome to update your details and resubmit your registration
+                                            using the same PSA ID. If you have questions about this decision,
+                                            please reach out to the PSA secretariat and reference your PSA ID
                                             <strong>{{ $registration->psa_id }}</strong>.
                                         @endif
                                     </td>
@@ -145,8 +180,8 @@
 
                     {{-- Footer --}}
                     <tr>
-                        <td align="center">
-                            <p style="margin:0;font-size:12px;color:#9ca3af;">
+                        <td align="center" style="text-align:center;">
+                            <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;">
                                 &copy; {{ date('Y') }} Philippine Society of Anesthesiologists. All rights reserved.
                             </p>
                         </td>

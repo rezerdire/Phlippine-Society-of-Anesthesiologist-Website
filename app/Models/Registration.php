@@ -18,7 +18,7 @@ class Registration extends Model
     protected $fillable = [
         'psa_id', 'prc_number', 'last_name', 'first_name', 'middle_name',
         'hospital_name', 'hospital_address', 'email', 'contact_number', 'membership', 'discount_id', 'proof_payment',
-        'status', 'country',
+        'status', 'country', 'rejection_title', 'rejection_reason',
     ];
 
     protected $casts = ['prc_number' => 'integer'];

@@ -12,6 +12,10 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -47,22 +51,6 @@ class RegistrationsTable
                     ->label('Full Name')
                     ->searchable(['first_name', 'last_name', 'middle_name'])
                     ->sortable(['last_name', 'first_name']),
-
-                TextColumn::make('membership')
-                    ->label('Type')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'RM'    => 'Regular',
-                        'LM'    => 'Life',
-                        'TM'    => 'Trainee',
-                        default => $state,
-                    })
-                    ->color(fn ($state) => match ($state) {
-                        'RM'    => 'info',
-                        'LM'    => 'success',
-                        'TM'    => 'warning',
-                        default => 'gray',
-                    }),
 
                 TextColumn::make('member.mem_email_address')
                     ->label('Email (PSA Record)')
@@ -208,6 +196,17 @@ class RegistrationsTable
                                     ->dateTime('F d, Y g:i A')
                                     ->icon('heroicon-m-calendar')
                                     ->columnSpanFull(),
+
+                                TextEntry::make('rejection_title')
+                                    ->label('Rejection Title')
+                                    ->visible(fn (Registration $r) => $r->status === Registration::STATUS_REJECTED && filled($r->rejection_title))
+                                    ->columnSpanFull(),
+
+                                TextEntry::make('rejection_reason')
+                                    ->label('Rejection Reason')
+                                    ->html()
+                                    ->visible(fn (Registration $r) => $r->status === Registration::STATUS_REJECTED && filled($r->rejection_reason))
+                                    ->columnSpanFull(),
                             ]),
 
                         Section::make('Attachments')
@@ -247,8 +246,35 @@ class RegistrationsTable
                     ->color('danger')
                     ->visible(fn (Registration $r) => $r->isPending())
                     ->requiresConfirmation()
-                    ->action(function (Registration $r): void {
-                        $r->update(['status' => Registration::STATUS_REJECTED]);
+                    ->modalHeading('Reject Registration')
+                    ->modalDescription('Are you sure you want to reject this registration?')
+                    ->modalSubmitActionLabel('Reject')
+                    ->schema([
+                        Toggle::make('write_message')
+                            ->label('Write a custom rejection message?')
+                            ->helperText('If off, the registrant will receive a standard rejection email with no specific reason.')
+                            ->live()
+                            ->default(false),
+
+                        TextInput::make('rejection_title')
+                            ->label('Message Title')
+                            ->placeholder('e.g. Incomplete Requirements')
+                            ->visible(fn (Get $get) => $get('write_message'))
+                            ->required(fn (Get $get) => $get('write_message')),
+
+                        RichEditor::make('rejection_reason')
+                            ->label('Reason for Rejection')
+                            ->placeholder('Explain why this registration is being rejected...')
+                            ->visible(fn (Get $get) => $get('write_message'))
+                            ->required(fn (Get $get) => $get('write_message'))
+                            ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link']),
+                    ])
+                    ->action(function (Registration $r, array $data): void {
+                        $r->update([
+                            'status' => Registration::STATUS_REJECTED,
+                            'rejection_title' => $data['write_message'] ? ($data['rejection_title'] ?? null) : null,
+                            'rejection_reason' => $data['write_message'] ? ($data['rejection_reason'] ?? null) : null,
+                        ]);
                         Notification::make()->title('Registration rejected.')->danger()->send();
                     }),
 
@@ -270,7 +296,31 @@ class RegistrationsTable
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(fn ($records) => $records->each->update(['status' => Registration::STATUS_REJECTED])),
+                        ->schema([
+                            Toggle::make('write_message')
+                                ->label('Write a custom rejection message?')
+                                ->helperText('Applies the same title and reason to all selected registrations.')
+                                ->live()
+                                ->default(false),
+
+                            TextInput::make('rejection_title')
+                                ->label('Message Title')
+                                ->placeholder('e.g. Incomplete Requirements')
+                                ->visible(fn (Get $get) => $get('write_message'))
+                                ->required(fn (Get $get) => $get('write_message')),
+
+                            RichEditor::make('rejection_reason')
+                                ->label('Reason for Rejection')
+                                ->placeholder('Explain why these registrations are being rejected...')
+                                ->visible(fn (Get $get) => $get('write_message'))
+                                ->required(fn (Get $get) => $get('write_message'))
+                                ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link']),
+                        ])
+                        ->action(fn ($records, array $data) => $records->each->update([
+                            'status' => Registration::STATUS_REJECTED,
+                            'rejection_title' => $data['write_message'] ? ($data['rejection_title'] ?? null) : null,
+                            'rejection_reason' => $data['write_message'] ? ($data['rejection_reason'] ?? null) : null,
+                        ])),
                 ]),
             ]);
     }
