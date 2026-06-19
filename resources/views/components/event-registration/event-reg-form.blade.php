@@ -103,7 +103,7 @@ new class extends Component {
 
             'prcNumber'       => ['required', 'digits:7'],
             'email'           => ['required', 'email', 'max:255'],
-            'contactNumber'   => ['required', 'digits_between:10,11'],
+            'contactNumber'   => ['required', 'regex:/^09\d{9}$/'],
             'hospitalName'    => ['required', 'string', 'max:255'],
             'hospitalAddress' => ['required', 'string', 'max:255'],
             'country'         => ['required', 'string', 'max:255'],
@@ -319,7 +319,7 @@ new class extends Component {
                     <x-event-registration.section-title title="Member Information" />
                     <div class="grid grid-cols-1 sm:grid-cols-6 gap-4">
                         <div class="sm:col-span-1">
-                            <x-form.readonly-field label="PSA ID No." :value="$psaId" mono />
+                            <x-form.readonly-field label="PSA ID No." :value="$psaId"  mono />
                         </div>
                         <div class="sm:col-span-2">
                             <x-form.readonly-field label="First Name" :value="$firstName" />
@@ -337,13 +337,13 @@ new class extends Component {
                 <div class="mb-8">
                     <x-event-registration.section-title title="Contact Details" />
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <x-form.input label="PRC Number" hint="(7 digits)" name="prcNumber" wire:model="prcNumber"
-                            placeholder="1234567" maxlength="7" inputmode="numeric" />
+                        <x-form.input label="PRC Number" hint="(7 digits)" name="prcNumber" wire:model="prcNumber" pattern="^\d{7}$"
+                            placeholder="1234567" maxlength="7" inputmode="numeric"   pattern-message="PRC number must be exactly 7 digits."/>
 
                         <x-form.input label="Email Address" type="email" name="email" wire:model="email"
                             placeholder="you@example.com" />
-
-                        <x-form.input label="Contact Number" name="contactNumber" wire:model="contactNumber"
+                            
+                        <x-form.input label="Contact Number" name="contactNumber" pattern="^09\d{9}$" pattern-message="Please enter a valid PH mobile number (e.g. 09123456789)."
                             placeholder="09XXXXXXXXX" inputmode="numeric" maxlength="11" />
 
                         <div class="sm:col-span-2">

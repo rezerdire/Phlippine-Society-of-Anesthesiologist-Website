@@ -73,7 +73,8 @@ class RegistrationsTable
                     ->disk('public')
                     ->height(48)
                     ->width(64)
-                    ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover'])
+                    ,
 
                 ImageColumn::make('discount_id')
                     ->label('Discount ID')
@@ -217,7 +218,8 @@ class RegistrationsTable
                                     ->label('Proof of Payment')
                                     ->height(200)
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full']),
-
+                                    
+                                    
                                 ImageEntry::make('discount_id')
                                     ->disk('public')
                                     ->label('Senior Discount ID')

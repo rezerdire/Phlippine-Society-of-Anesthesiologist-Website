@@ -37,7 +37,7 @@
                 </td>
             </tr>
                                 {{-- Title --}}
-                    <tr>
+                    <tr align ="center">
                         <td align="center" style="padding-bottom: 6px;">
                             <h1 style="margin:0;font-size:22px;font-weight:800;color:#374151;">
                                 Registration Submitted!

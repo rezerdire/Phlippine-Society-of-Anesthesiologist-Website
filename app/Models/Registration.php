@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Mail\RegistrationStatusUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Mail;
 
 class Registration extends Model
 {
@@ -21,6 +23,15 @@ class Registration extends Model
 
     protected $casts = ['prc_number' => 'integer'];
 
+    protected static function booted(): void
+    {
+        static::updated(function (Registration $registration) {
+            if ($registration->wasChanged('status') && $registration->status !== self::STATUS_PENDING) {
+                Mail::to($registration->email)->send(new RegistrationStatusUpdated($registration));
+            }
+        });
+    }
+
     public function scopePending($query)  { return $query->where('status', self::STATUS_PENDING); }
     public function scopeApproved($query) { return $query->where('status', self::STATUS_APPROVED); }
     public function scopeRejected($query) { return $query->where('status', self::STATUS_REJECTED); }
@@ -34,12 +45,8 @@ class Registration extends Model
     public function isApproved(): bool  { return $this->status === self::STATUS_APPROVED; }
     public function hasDiscount(): bool { return !is_null($this->discount_id); }
 
-    
-   public function member()
+    public function member()
     {
         return $this->belongsTo(Member::class, 'psa_id', 'member_id_no');
     }
 }
-
-
-

@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\Registrations\Pages;
 
 use App\Filament\Resources\Registrations\RegistrationResource;
-use Filament\Actions\CreateAction;
+use App\Filament\Resources\Registrations\Widgets\RegistrationStatsOverview;
+use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListRegistrations extends ListRecords
@@ -13,7 +14,14 @@ class ListRegistrations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            RegistrationStatsOverview::class,
         ];
     }
 }
