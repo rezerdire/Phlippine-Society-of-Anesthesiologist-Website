@@ -1,11 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\RegistrationPdfController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/admin/registrations-export-pdf', [RegistrationPdfController::class, 'export'])
+        ->name('admin.registrations.export-pdf');
+});
 
 Route::view('/', 'pages.Home.index')->name('home');
 Route::view('/About-Us/Office-and-board', 'pages.AboutUs.office-and-board')->name('Office-and-board');

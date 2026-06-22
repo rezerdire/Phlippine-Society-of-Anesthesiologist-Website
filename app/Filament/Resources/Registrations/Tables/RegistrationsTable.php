@@ -15,6 +15,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -30,7 +31,7 @@ class RegistrationsTable
         return $table
             ->defaultSort('created_at', 'desc')
             ->recordAction('view_record')
-             ->recordUrl(null)          
+            ->recordUrl(null)
             ->columns([
 
                 TextColumn::make('id')
@@ -55,50 +56,53 @@ class RegistrationsTable
                 TextColumn::make('member.mem_email_address')
                     ->label('Email (PSA Record)')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    
-             ImageColumn::make('proof_payment')
-            ->label('Payment')
-            ->disk('public')
-            ->height(48)
-            ->width(64)
-            ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
-            ->action(
-                Action::make('previewPayment')
-                    ->modalHeading('Proof of Payment')
-                    ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
-                        '<div class="flex justify-center p-2">
-                            <img src="' . asset('storage/' . $record->proof_payment) . '" 
-                                class="max-h-[70vh] rounded-lg object-contain" />
-                        </div>'
-                    ))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
-                    ->modalWidth('lg')
-            ),
 
-        ImageColumn::make('discount_id')
-            ->label('Discount ID')
-            ->disk('public')
-            ->height(48)
-            ->width(64)
-            ->placeholder('—')
-            ->toggleable()
-            ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
-            ->action(
-                Action::make('previewDiscountId')
-                    ->modalHeading('Senior Discount ID')
-                    ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
-                        $record->discount_id
-                            ? '<div class="flex justify-center p-2">
-                                <img src="' . asset('storage/' . $record->discount_id) . '" 
-                                        class="max-h-[70vh] rounded-lg object-contain" />
-                            </div>'
-                            : '<p class="text-center text-gray-400 py-6">No discount ID uploaded.</p>'
-                    ))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
-                    ->modalWidth('3xl')
-            ),
+                ImageColumn::make('proof_payment')
+                    ->label('Payment')
+                    ->disk('public')
+                    ->height(48)
+                    ->width(64)
+                    ->placeholder('No Uploaded Photo')
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+                    ->action(
+                        Action::make('previewPayment')
+                            ->modalHeading('Proof of Payment')
+                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                $record->proof_payment
+                                    ? '<div class="flex justify-center p-2">
+                                        <img src="' . asset('storage/' . $record->proof_payment) . '"
+                                            class="max-h-[70vh] r ounded-lg object-contain" />
+                                    </div>'
+                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                            ))
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Close')
+                            ->modalWidth('lg')
+                    ),
+
+                ImageColumn::make('discount_id')
+                    ->label('Discount ID')
+                    ->disk('public')
+                    ->height(48)
+                    ->width(64)
+                    ->placeholder('No Uploaded Photo')
+                    ->toggleable()
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+                    ->action(
+                        Action::make('previewDiscountId')
+                            ->modalHeading('Senior Discount ID')
+                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                $record->discount_id
+                                    ? '<div class="flex justify-center p-2">
+                                        <img src="' . asset('storage/' . $record->discount_id) . '"
+                                                class="max-h-[70vh] rounded-lg object-contain" />
+                                    </div>'
+                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                            ))
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Close')
+                            ->modalWidth('3xl')
+                    ),
 
                 TextColumn::make('status')
                     ->badge()
@@ -159,11 +163,43 @@ class RegistrationsTable
                     ->label('Has Senior Discount')
                     ->query(fn (Builder $q) => $q->whereNotNull('discount_id')),
 
+                Filter::make('ref_range')
+                    ->label('Reference # Range')
+                    ->form([
+                        Grid::make(2)->schema([
+                            TextInput::make('ref_from')
+                                ->label('From  #')
+                                ->numeric()
+                                ->minValue(1)
+                                ->placeholder('e.g. 1'),
+
+                            TextInput::make('ref_to')
+                                ->label('To  #')
+                                ->numeric()
+                                ->minValue(1)
+                                ->placeholder('e.g. 50'),
+                        ]),
+                    ])
+                    ->query(fn (Builder $q, array $data) => $q
+                        ->when($data['ref_from'] ?? null, fn ($q, $v) => $q->where('id', '>=', (int) $v))
+                        ->when($data['ref_to']   ?? null, fn ($q, $v) => $q->where('id', '<=', (int) $v))
+                    )
+                    ->indicateUsing(function (array $data): ?string {
+                        $from = $data['ref_from'] ?? null;
+                        $to   = $data['ref_to']   ?? null;
+
+                        if ($from && $to)  return "Ref #{$from} – #{$to}";
+                        if ($from)         return "Ref # from #{$from}";
+                        if ($to)           return "Ref # up to #{$to}";
+
+                        return null;
+                    }),
+
             ])
 
             ->recordActions([
 
-                Action::make('view_record')       
+                Action::make('view_record')
                     ->label('View')
                     ->icon('heroicon-o-eye')
                     ->modalHeading(fn (Registration $r) => '' . $r->full_name)
@@ -244,46 +280,47 @@ class RegistrationsTable
                                     ->disk('public')
                                     ->label('Proof of Payment')
                                     ->height(200)
+                                    ->placeholder('No Uploaded Photo')
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
-                                         ->action(
-                                    Action::make('previewPayment')
-                                        ->modalHeading('Proof of Payment')
-                                        ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
-                                            '<div class="flex justify-center p-2">
-                                                <img src="' . asset('storage/' . $record->proof_payment) . '" 
-                                                    class="max-h-[70vh] rounded-lg object-contain" />
-                                            </div>'
-                                        ))
-                                        ->modalSubmitAction(false)
-                                        ->modalCancelActionLabel('Close')
-                                        ->modalWidth('lg')
-                                ),
-                                    
-                                    
+                                    ->action(
+                                        Action::make('previewPayment')
+                                            ->modalHeading('Proof of Payment')
+                                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                                $record->proof_payment
+                                                    ? '<div class="flex justify-center p-2">
+                                                        <img src="' . asset('storage/' . $record->proof_payment) . '"
+                                                            class="max-h-[70vh] rounded-lg object-contain" />
+                                                    </div>'
+                                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                                            ))
+                                            ->modalSubmitAction(false)
+                                            ->modalCancelActionLabel('Close')
+                                            ->modalWidth('lg')
+                                    ),
+
                                 ImageEntry::make('discount_id')
                                     ->disk('public')
                                     ->label('Senior Discount ID')
                                     ->height(200)
-                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
-                                    ->placeholder('No discount ID uploaded')
-                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+                                    ->placeholder('No Uploaded Photo')
                                     ->action(
                                         Action::make('previewDiscountId')
                                             ->modalHeading('Senior Discount ID')
                                             ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
                                                 $record->discount_id
                                                     ? '<div class="flex justify-center p-2">
-                                                        <img src="' . asset('storage/' . $record->discount_id) . '" 
+                                                        <img src="' . asset('storage/' . $record->discount_id) . '"
                                                                 class="max-h-[70vh] rounded-lg object-contain" />
                                                     </div>'
-                                                    : '<p class="text-center text-gray-400 py-6">No discount ID uploaded.</p>'
+                                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
                                             ))
                                             ->modalSubmitAction(false)
                                             ->modalCancelActionLabel('Close')
                                             ->modalWidth('3xl')
                                     ),
-                                                    ]),
-                                            ])
+                            ]),
+                    ])
                     ->action(fn () => null),
 
                 Action::make('approve')
@@ -328,8 +365,8 @@ class RegistrationsTable
                     ])
                     ->action(function (Registration $r, array $data): void {
                         $r->update([
-                            'status' => Registration::STATUS_REJECTED,
-                            'rejection_title' => $data['write_message'] ? ($data['rejection_title'] ?? null) : null,
+                            'status'           => Registration::STATUS_REJECTED,
+                            'rejection_title'  => $data['write_message'] ? ($data['rejection_title']  ?? null) : null,
                             'rejection_reason' => $data['write_message'] ? ($data['rejection_reason'] ?? null) : null,
                         ]);
                         Notification::make()->title('Registration rejected.')->danger()->send();
@@ -374,11 +411,65 @@ class RegistrationsTable
                                 ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link']),
                         ])
                         ->action(fn ($records, array $data) => $records->each->update([
-                            'status' => Registration::STATUS_REJECTED,
-                            'rejection_title' => $data['write_message'] ? ($data['rejection_title'] ?? null) : null,
+                            'status'           => Registration::STATUS_REJECTED,
+                            'rejection_title'  => $data['write_message'] ? ($data['rejection_title']  ?? null) : null,
                             'rejection_reason' => $data['write_message'] ? ($data['rejection_reason'] ?? null) : null,
                         ])),
+
+                    BulkAction::make('export_selected_pdf')
+                        ->label('Export Selected to PDF')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('info')
+                        ->requiresConfirmation()
+                        ->modalHeading('Export Selected Registrations')
+                        ->modalDescription('This will generate a PDF with one page per selected registration, including their proof of payment.')
+                        ->modalSubmitActionLabel('Generate PDF')
+                        ->action(function ($records) {
+                            $ids = $records->pluck('id')->sort()->values();
+                            $url = route('admin.registrations.export-pdf', [
+                                'ids' => $ids->implode(','),
+                            ]);
+                            return redirect()->away($url);
+                        }),
+
                 ]),
+
+                Action::make('export_pdf_range')
+                    ->label('Export PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('info')
+                    ->modalHeading('Export Registrations to PDF')
+                    ->modalDescription('Enter a reference number range to export those registrations as a PDF, one record per page.')
+                    ->modalSubmitActionLabel('Generate PDF')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextInput::make('ref_from')
+                                ->label('Reference # From')
+                                ->numeric()
+                                ->minValue(1)
+                                ->required()
+                                ->prefix('#')
+                                ->placeholder('e.g. 1'),
+
+                            TextInput::make('ref_to')
+                                ->label('Reference # To')
+                                ->numeric()
+                                ->minValue(1)
+                                ->required()
+                                ->prefix('#')
+                                ->placeholder('e.g. 10'),
+                        ]),
+                    ])
+                    ->action(function (array $data) {
+                        $from = min((int) $data['ref_from'], (int) $data['ref_to']);
+                        $to   = max((int) $data['ref_from'], (int) $data['ref_to']);
+
+                        $url = route('admin.registrations.export-pdf', [
+                            'from' => $from,
+                            'to'   => $to,
+                        ]);
+                        return redirect()->away($url);
+                    }),
             ]);
     }
 }
