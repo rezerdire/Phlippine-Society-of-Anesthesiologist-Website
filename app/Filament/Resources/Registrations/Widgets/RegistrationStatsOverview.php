@@ -11,8 +11,10 @@ class RegistrationStatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalRegistered  = Registration::count();
-
+        $totalRegistered  = Registration::whereIn('status',[
+            Registration::STATUS_PENDING,
+            Registration::STATUS_APPROVED
+        ])->count();
         $notYetRegistered = Member::whereIn('psa_mem_type', ['RM', 'LM', 'TM'])
             ->whereDoesntHave('registration')
             ->count();

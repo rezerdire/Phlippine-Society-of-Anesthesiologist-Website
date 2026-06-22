@@ -56,21 +56,49 @@ class RegistrationsTable
                     ->label('Email (PSA Record)')
                     ->toggleable(isToggledHiddenByDefault: true),
                     
-                ImageColumn::make('proof_payment')
-                    ->label('Payment')
-                    ->disk('public')
-                    ->height(48)
-                    ->width(64)
-                    ->extraImgAttributes(['class' => 'rounded-lg object-cover'])
-                    ,
+             ImageColumn::make('proof_payment')
+            ->label('Payment')
+            ->disk('public')
+            ->height(48)
+            ->width(64)
+            ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+            ->action(
+                Action::make('previewPayment')
+                    ->modalHeading('Proof of Payment')
+                    ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                        '<div class="flex justify-center p-2">
+                            <img src="' . asset('storage/' . $record->proof_payment) . '" 
+                                class="max-h-[70vh] rounded-lg object-contain" />
+                        </div>'
+                    ))
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->modalWidth('lg')
+            ),
 
-                ImageColumn::make('discount_id')
-                    ->label('Discount ID')
-                    ->disk('public')
-                    ->height(48)
-                    ->width(64)
-                    ->placeholder('—')
-                    ->toggleable(),
+        ImageColumn::make('discount_id')
+            ->label('Discount ID')
+            ->disk('public')
+            ->height(48)
+            ->width(64)
+            ->placeholder('—')
+            ->toggleable()
+            ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+            ->action(
+                Action::make('previewDiscountId')
+                    ->modalHeading('Senior Discount ID')
+                    ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                        $record->discount_id
+                            ? '<div class="flex justify-center p-2">
+                                <img src="' . asset('storage/' . $record->discount_id) . '" 
+                                        class="max-h-[70vh] rounded-lg object-contain" />
+                            </div>'
+                            : '<p class="text-center text-gray-400 py-6">No discount ID uploaded.</p>'
+                    ))
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->modalWidth('3xl')
+            ),
 
                 TextColumn::make('status')
                     ->badge()
@@ -139,7 +167,7 @@ class RegistrationsTable
                     ->label('View')
                     ->icon('heroicon-o-eye')
                     ->modalHeading(fn (Registration $r) => '' . $r->full_name)
-                    ->modalWidth('4xl')
+                    ->modalWidth('3xl')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
                     ->infolist([
@@ -216,7 +244,20 @@ class RegistrationsTable
                                     ->disk('public')
                                     ->label('Proof of Payment')
                                     ->height(200)
-                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full']),
+                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
+                                         ->action(
+                                    Action::make('previewPayment')
+                                        ->modalHeading('Proof of Payment')
+                                        ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                            '<div class="flex justify-center p-2">
+                                                <img src="' . asset('storage/' . $record->proof_payment) . '" 
+                                                    class="max-h-[70vh] rounded-lg object-contain" />
+                                            </div>'
+                                        ))
+                                        ->modalSubmitAction(false)
+                                        ->modalCancelActionLabel('Close')
+                                        ->modalWidth('lg')
+                                ),
                                     
                                     
                                 ImageEntry::make('discount_id')
@@ -224,9 +265,25 @@ class RegistrationsTable
                                     ->label('Senior Discount ID')
                                     ->height(200)
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
-                                    ->placeholder('No discount ID uploaded'),
-                            ]),
-                    ])
+                                    ->placeholder('No discount ID uploaded')
+                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
+                                    ->action(
+                                        Action::make('previewDiscountId')
+                                            ->modalHeading('Senior Discount ID')
+                                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                                $record->discount_id
+                                                    ? '<div class="flex justify-center p-2">
+                                                        <img src="' . asset('storage/' . $record->discount_id) . '" 
+                                                                class="max-h-[70vh] rounded-lg object-contain" />
+                                                    </div>'
+                                                    : '<p class="text-center text-gray-400 py-6">No discount ID uploaded.</p>'
+                                            ))
+                                            ->modalSubmitAction(false)
+                                            ->modalCancelActionLabel('Close')
+                                            ->modalWidth('3xl')
+                                    ),
+                                                    ]),
+                                            ])
                     ->action(fn () => null),
 
                 Action::make('approve')

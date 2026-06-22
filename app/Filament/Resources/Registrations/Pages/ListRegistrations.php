@@ -18,10 +18,10 @@ class ListRegistrations extends ListRecords
         ];
     }
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            RegistrationStatsOverview::class,
-        ];
-    }
+    // protected function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         RegistrationStatsOverview::class,
+    //     ];
+    // }
 }
