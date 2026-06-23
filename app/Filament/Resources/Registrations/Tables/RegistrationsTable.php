@@ -80,6 +80,7 @@ class RegistrationsTable
                             ->modalWidth('lg')
                     ),
 
+
                 ImageColumn::make('discount_id')
                     ->label('Discount ID')
                     ->disk('public')
@@ -202,7 +203,7 @@ class RegistrationsTable
                 Action::make('view_record')
                     ->label('View')
                     ->icon('heroicon-o-eye')
-                    ->modalHeading(fn (Registration $r) => '' . $r->full_name)
+                    ->modalHeading(fn (Registration $r) => '' . $r->full_name) 
                     ->modalWidth('3xl')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
@@ -272,7 +273,7 @@ class RegistrationsTable
                                     ->visible(fn (Registration $r) => $r->status === Registration::STATUS_REJECTED && filled($r->rejection_reason))
                                     ->columnSpanFull(),
                             ]),
-
+                    // uploads
                         Section::make('Attachments')
                             ->columns(2)
                             ->schema([
@@ -283,6 +284,7 @@ class RegistrationsTable
                                     ->placeholder('No Uploaded Photo')
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
                                     ->action(
+                                        // pop up modal for image preview
                                         Action::make('previewPayment')
                                             ->modalHeading('Proof of Payment')
                                             ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
@@ -338,7 +340,7 @@ class RegistrationsTable
                     ->label('Reject')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (Registration $r) => $r->isPending())
+                    ->visible(fn (Registration $r) => $r->isPending()) //it show this action if the status is pending otherwise it will not how
                     ->requiresConfirmation()
                     ->modalHeading('Reject Registration')
                     ->modalDescription('Are you sure you want to reject this registration?')
@@ -410,12 +412,14 @@ class RegistrationsTable
                                 ->required(fn (Get $get) => $get('write_message'))
                                 ->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link']),
                         ])
+                        // bulk actions logic with ternary operator if the user wants to write message/title it will store to var if not 
+                        // it will return null 
                         ->action(fn ($records, array $data) => $records->each->update([
                             'status'           => Registration::STATUS_REJECTED,
                             'rejection_title'  => $data['write_message'] ? ($data['rejection_title']  ?? null) : null,
                             'rejection_reason' => $data['write_message'] ? ($data['rejection_reason'] ?? null) : null,
                         ])),
-
+                    // action for selecting multiple data
                     BulkAction::make('export_selected_pdf')
                         ->label('Export Selected to PDF')
                         ->icon('heroicon-o-document-arrow-down')
@@ -434,6 +438,7 @@ class RegistrationsTable
 
                 ]),
 
+                // PDF Convertion   
                 Action::make('export_pdf_range')
                     ->label('Export PDF')
                     ->icon('heroicon-o-document-arrow-down')
@@ -449,7 +454,7 @@ class RegistrationsTable
                                 ->minValue(1)
                                 ->required()
                                 ->prefix('#')
-                                ->placeholder('e.g. 1'),
+                                ->placeholder('e.g. 000001'),
 
                             TextInput::make('ref_to')
                                 ->label('Reference # To')
@@ -457,17 +462,19 @@ class RegistrationsTable
                                 ->minValue(1)
                                 ->required()
                                 ->prefix('#')
-                                ->placeholder('e.g. 10'),
+                                ->placeholder('e.g. 000016'),
                         ]),
                     ])
+                    // if the user create a mistake of inputting in the max input into ref_from it will still works in a reverse order
+                    // the code automatically swaps the values so the range still works.
                     ->action(function (array $data) {
-                        $from = min((int) $data['ref_from'], (int) $data['ref_to']);
+                        $from = min((int) $data['ref_from'], (int) $data['ref_to']); //convertion string to int 
                         $to   = max((int) $data['ref_from'], (int) $data['ref_to']);
 
                         $url = route('admin.registrations.export-pdf', [
                             'from' => $from,
                             'to'   => $to,
-                        ]);
+                        ]);  //redirect to laraveldompdf
                         return redirect()->away($url);
                     }),
             ]);
