@@ -12,31 +12,41 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 
+
+// Main purpose of this file is importing the folder of gallery images into the DB (pathing*) and storage, instead of manually
+// Instead of manually uploading each image
+
 class ImportGalleryFolder extends Command
 {
+    // function of artisan command in cli 
+    // ex: php artisan gallery:import aca-2025 images/gallery/aca_2025 --event-name="ACA 2025" --dry-run
     protected $signature = 'gallery:import
         {event-slug : e.g. aca-2025}
         {source : Path to the folder containing day1/day2/day3 subfolders. Relative paths are resolved against public/, e.g. images/gallery/aca_2025}
         {--event-name= : Display name for the event, e.g. "ACA 2025" (only needed first time)}
         {--dry-run : Preview what would be imported without touching the DB or filesystem}';
 
+    
     protected $description = 'Import existing day/category image folders into the gallery_* tables';
 
     protected array $imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
 
+    
     public function handle(): int
     {
+        // gallery event name
         $eventSlug = $this->argument('event-slug');
         $source = $this->resolveSourcePath($this->argument('source'));
         $dryRun = (bool) $this->option('dry-run');
-
+        
+        // if the the folder doesn't exist 
         if (! is_dir($source)) {
             $this->error("Source path does not exist: {$source}");
             return self::FAILURE;
         }
-
+        // if exist it will read the designated pathing
         $this->info("Reading from: {$source}");
-
+        // its like SELECT * FROM galllery_events WHERE slug = 'aca-2025' 
         $event = $dryRun
             ? GalleryEvent::firstWhere('slug', $eventSlug)
             : GalleryEvent::firstOrCreate(
@@ -44,12 +54,15 @@ class ImportGalleryFolder extends Command
                 ['name' => $this->option('event-name') ?? Str::headline($eventSlug)]
             );
 
+        // if the event folder doesn't exist it will return with this message 
         if (! $event && $dryRun) {
             $this->warn("Event '{$eventSlug}' doesn't exist yet — would be created on a real run.");
         }
 
+        // read the subfolder for aca its a day
         $dayFolders = $this->subdirectories($source);
-
+        
+        // if folder doesn't exist
         if (empty($dayFolders)) {
             $this->warn("No subfolders found in {$source}");
             return self::SUCCESS;
@@ -58,6 +71,7 @@ class ImportGalleryFolder extends Command
         $totalImported = 0;
         $totalSkipped = 0;
 
+        // creating folder pathing
         foreach ($dayFolders as $dayPath) {
             $daySlug = Str::slug(basename($dayPath));
             $dayLabel = Str::title(preg_replace('/day(\d+)/i', 'Day $1', basename($dayPath)));
@@ -92,18 +106,18 @@ class ImportGalleryFolder extends Command
                 if ($dryRun) {
                     continue;
                 }
-
+                // creating category
                 $category = GalleryCategory::firstOrCreate(
                     ['gallery_day_id' => $day->id, 'slug' => $categorySlug],
                     ['name' => $categoryName, 'order' => 0]
                 );
-
+                // path
                 $destDir = "gallery/{$eventSlug}/{$daySlug}/{$categorySlug}";
-
+                // pathing connection
                 foreach ($files as $index => $filePath) {
                     $filename = basename($filePath);
                     $destPath = "{$destDir}/{$filename}";
-
+                // if it exist
                     $alreadyExists = GalleryImage::where('gallery_category_id', $category->id)
                         ->where('path', $destPath)
                         ->exists();
@@ -112,18 +126,23 @@ class ImportGalleryFolder extends Command
                         $totalSkipped++;
                         continue;
                     }
-
+                    // root path
                     Storage::disk('public')->put(
                         $destPath,
                         file_get_contents($filePath)
                     );
-
+                    // Image creation
                     $image = GalleryImage::create([
                         'gallery_category_id' => $category->id,
                         'path' => $destPath,
                         'order' => $index,
                     ]);
-
+                    // importing
+                    // important process this a another class
+                    // that reads the original image
+                    // convert into webp 
+                    // resize if needed
+                    // update the database
                     ProcessGalleryImage::dispatch($image);
 
                     $totalImported++;
@@ -132,13 +151,13 @@ class ImportGalleryFolder extends Command
         }
 
         $this->newLine();
-
+        // if task is done cli print
         if ($dryRun) {
             $this->info('Dry run complete — nothing was written. Remove --dry-run to actually import.');
         } else {
             $this->info("Imported {$totalImported} image(s), skipped {$totalSkipped} already-imported.");
             $this->info('Thumbnail generation jobs have been queued — make sure a queue worker is running:');
-            $this->line('  php artisan queue:work');
+            $this->line(' php artisan queue:work');
         }
 
         return self::SUCCESS;
@@ -150,6 +169,7 @@ class ImportGalleryFolder extends Command
      */
     protected function resolveSourcePath(string $source): string
     {
+        // in case the folder path are on different storage
         if (Str::startsWith($source, ['/', 'C:', 'D:'])) {
             return rtrim($source, '/');
         }
@@ -163,7 +183,7 @@ class ImportGalleryFolder extends Command
 
         return array_map(fn ($dir) => $dir->getPathname(), iterator_to_array($finder));
     }
-
+    // path finder
     protected function imageFiles(string $path): array
     {
         $finder = (new Finder())->files()->in($path)->depth(0)->sortByName();

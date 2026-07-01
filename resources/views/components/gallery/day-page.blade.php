@@ -228,8 +228,7 @@ new class extends Component
         <button
             x-show="index < items.length - 1 && zoom === 1"
             @click.stop="next()"
-            class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-colors z-10"
-        >
+            class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-colors z-10">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
@@ -276,10 +275,7 @@ new class extends Component
         </div>
 
         {{-- Counter --}}
-        <div
-            class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm z-10"
-            x-text="(index + 1) + ' / ' + items.length"
-        ></div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm z-10" x-text="(index + 1) + ' / ' + items.length"></div>
     </div>
 
 </div>

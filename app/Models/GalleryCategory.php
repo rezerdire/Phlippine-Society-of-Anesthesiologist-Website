@@ -18,5 +18,5 @@ class GalleryCategory extends Model
     public function images(): HasMany
     {
         return $this->hasMany(GalleryImage::class)->orderBy('order');
-    }
+    }       
 }

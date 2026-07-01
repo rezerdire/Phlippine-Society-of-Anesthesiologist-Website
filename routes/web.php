@@ -31,9 +31,9 @@ Route::get('/gallery/{event:slug}/{day:slug}', function (GalleryEvent $event, Ga
     return view('pages.Gallery.gallery', compact('event', 'day'));
 })->name('gallery.day')->scopeBindings();
 
-
+Route::view('/Login', 'pages.Login.login')->name('Login');
 Route::view('/', 'pages.Home.index')->name('home');
-Route::view('/About-Us/Office-and-board', 'pages.AboutUs.office-and-board')->name('Office-and-board');
+Route::view('/About-Us/Office-and-board', 'pages.AboutUs.offi   e-and-board')->name('Office-and-board');
 Route::view('/About-Us/SubSpecialty-SIG', 'pages.AboutUs.subspecialty-sig')->name('SubSpecialty-SIG');
 Route::view('/Chapter-Presidents', 'pages.AboutUs.chapter-presidents')->name('Chapter-Presidents');
 Route::view('/Legacy', 'pages.AboutUs.legacy')->name('Legacy');

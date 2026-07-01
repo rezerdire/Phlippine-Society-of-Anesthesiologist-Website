@@ -13,7 +13,7 @@ new class extends Component
     <div class="flex items-center justify-between h-16">
 
       {{-- Logo --}}
-      <a href="#" class="flex items-center gap-1">
+      <a href="{{ route('home') }}" class="flex items-center gap-1">
             <img src="{{ asset('Images/PSA_LOGO.png') }}" alt="PSA Logo" class="h-12 w-10 w-auto">
         <div class="leading-tight">
           <span class="block text-sm font-bold text-slate-900 tracking-tight uppercase">Philippine Society of <br> Anesthesiologists, Inc</span>
@@ -57,8 +57,9 @@ new class extends Component
         <a wire:navigate href="{{ route('Gallery') }}" class="nav-link px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors">Gallery</a>
         <a wire:navigate href="{{ route('Event-Registration') }}" class="nav-link px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors">Event Registration</a>
 
+        <a wire:navigate href="{{ route('Login') }}" class="ml-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Login </a>
 
-        <a href="{{ route('Membership') }}" class="ml-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Membership </a>
+        {{-- <a href="{{ route('Membership') }}" class="ml-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">Membership </a> --}}
       </div>
 
       {{-- Mobile toggle --}}
