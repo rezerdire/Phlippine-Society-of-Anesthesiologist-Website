@@ -1,5 +1,5 @@
 <?php
-
+// temp file for testing data seeder
 use App\Models\Member;
 use Livewire\Component;
 use Livewire\WithPagination;
