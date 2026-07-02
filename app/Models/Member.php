@@ -94,4 +94,10 @@ class Member extends Model
     {
         return trim("{$this->mem_first_name} {$this->mem_middle_name} {$this->mem_last_name}");
     }
+
+    // FILAMENT STATS WIDGET
+        public function registration(): HasOne
+    {
+        return $this->hasOne(Registration::class, 'psa_id', 'member_id_no');
+    }
 }
