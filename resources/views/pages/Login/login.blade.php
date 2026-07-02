@@ -127,4 +127,11 @@ new class extends Component
     </div>
 </div>
 
+
+<h1 class ="text-3xl font-bold underline">
+Testing phase
+</h1>
 @endsection
+
+
+{{-- testing --}}
