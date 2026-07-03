@@ -23,24 +23,9 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 
 class RegistrationsTable
 {
-    /**
-     * Only return a path if the file actually exists on disk.
-     * Prevents broken-image icons for DB rows whose files were lost
-     * (e.g. migrated data without matching storage files).
-     */
-    protected static function existingFileOrNull(?string $path): ?string
-    {
-        if (blank($path)) {
-            return null;
-        }
-
-        return Storage::disk('public')->exists($path) ? $path : null;
-    }
-
     public static function configure(Table $table): Table
     {
         return $table
@@ -78,27 +63,18 @@ class RegistrationsTable
                     ->height(48)
                     ->width(64)
                     ->placeholder('No Uploaded Photo')
-                    ->getStateUsing(fn (Registration $record) => static::existingFileOrNull($record->proof_payment))
                     ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
                     ->action(
                         Action::make('previewPayment')
                             ->modalHeading('Proof of Payment')
-                            ->modalContent(function (Registration $record) {
-                                $path = static::existingFileOrNull($record->proof_payment);
-
-                                return new \Illuminate\Support\HtmlString(
-                                    $path
-                                        ? '<div class="flex justify-center p-2">
-                                            <img src="' . asset('storage/' . $path) . '"
-                                                class="max-h-[70vh] rounded-lg object-contain" />
-                                        </div>'
-                                        : '<p class="text-center text-gray-400 py-6">'
-                                            . ($record->proof_payment
-                                                ? 'File was uploaded but is missing from storage.'
-                                                : 'No Uploaded Photo')
-                                            . '</p>'
-                                );
-                            })
+                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                $record->proof_payment
+                                    ? '<div class="flex justify-center p-2">
+                                        <img src="' . asset('storage/' . $record->proof_payment) . '"
+                                            class="max-h-[70vh] r ounded-lg object-contain" />
+                                    </div>'
+                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                            ))
                             ->modalSubmitAction(false)
                             ->modalCancelActionLabel('Close')
                             ->modalWidth('lg')
@@ -112,27 +88,18 @@ class RegistrationsTable
                     ->width(64)
                     ->placeholder('No Uploaded Photo')
                     ->toggleable()
-                    ->getStateUsing(fn (Registration $record) => static::existingFileOrNull($record->discount_id))
                     ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
                     ->action(
                         Action::make('previewDiscountId')
                             ->modalHeading('Senior Discount ID')
-                            ->modalContent(function (Registration $record) {
-                                $path = static::existingFileOrNull($record->discount_id);
-
-                                return new \Illuminate\Support\HtmlString(
-                                    $path
-                                        ? '<div class="flex justify-center p-2">
-                                            <img src="' . asset('storage/' . $path) . '"
-                                                    class="max-h-[70vh] rounded-lg object-contain" />
-                                        </div>'
-                                        : '<p class="text-center text-gray-400 py-6">'
-                                            . ($record->discount_id
-                                                ? 'File was uploaded but is missing from storage.'
-                                                : 'No Uploaded Photo')
-                                            . '</p>'
-                                );
-                            })
+                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                $record->discount_id
+                                    ? '<div class="flex justify-center p-2">
+                                        <img src="' . asset('storage/' . $record->discount_id) . '"
+                                                class="max-h-[70vh] rounded-lg object-contain" />
+                                    </div>'
+                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                            ))
                             ->modalSubmitAction(false)
                             ->modalCancelActionLabel('Close')
                             ->modalWidth('3xl')
@@ -315,28 +282,19 @@ class RegistrationsTable
                                     ->label('Proof of Payment')
                                     ->height(200)
                                     ->placeholder('No Uploaded Photo')
-                                    ->state(fn (Registration $record) => static::existingFileOrNull($record->proof_payment))
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover w-full'])
                                     ->action(
                                         // pop up modal for image preview
                                         Action::make('previewPayment')
                                             ->modalHeading('Proof of Payment')
-                                            ->modalContent(function (Registration $record) {
-                                                $path = static::existingFileOrNull($record->proof_payment);
-
-                                                return new \Illuminate\Support\HtmlString(
-                                                    $path
-                                                        ? '<div class="flex justify-center p-2">
-                                                            <img src="' . asset('storage/' . $path) . '"
-                                                                class="max-h-[70vh] rounded-lg object-contain" />
-                                                        </div>'
-                                                        : '<p class="text-center text-gray-400 py-6">'
-                                                            . ($record->proof_payment
-                                                                ? 'File was uploaded but is missing from storage.'
-                                                                : 'No Uploaded Photo')
-                                                            . '</p>'
-                                                );
-                                            })
+                                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                                $record->proof_payment
+                                                    ? '<div class="flex justify-center p-2">
+                                                        <img src="' . asset('storage/' . $record->proof_payment) . '"
+                                                            class="max-h-[70vh] rounded-lg object-contain" />
+                                                    </div>'
+                                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                                            ))
                                             ->modalSubmitAction(false)
                                             ->modalCancelActionLabel('Close')
                                             ->modalWidth('lg')
@@ -348,26 +306,17 @@ class RegistrationsTable
                                     ->height(200)
                                     ->extraImgAttributes(['class' => 'rounded-lg object-cover cursor-pointer'])
                                     ->placeholder('No Uploaded Photo')
-                                    ->state(fn (Registration $record) => static::existingFileOrNull($record->discount_id))
                                     ->action(
                                         Action::make('previewDiscountId')
                                             ->modalHeading('Senior Discount ID')
-                                            ->modalContent(function (Registration $record) {
-                                                $path = static::existingFileOrNull($record->discount_id);
-
-                                                return new \Illuminate\Support\HtmlString(
-                                                    $path
-                                                        ? '<div class="flex justify-center p-2">
-                                                            <img src="' . asset('storage/' . $path) . '"
-                                                                    class="max-h-[70vh] rounded-lg object-contain" />
-                                                        </div>'
-                                                        : '<p class="text-center text-gray-400 py-6">'
-                                                            . ($record->discount_id
-                                                                ? 'File was uploaded but is missing from storage.'
-                                                                : 'No Uploaded Photo')
-                                                            . '</p>'
-                                                );
-                                            })
+                                            ->modalContent(fn (Registration $record) => new \Illuminate\Support\HtmlString(
+                                                $record->discount_id
+                                                    ? '<div class="flex justify-center p-2">
+                                                        <img src="' . asset('storage/' . $record->discount_id) . '"
+                                                                class="max-h-[70vh] rounded-lg object-contain" />
+                                                    </div>'
+                                                    : '<p class="text-center text-gray-400 py-6">No Uploaded Photo</p>'
+                                            ))
                                             ->modalSubmitAction(false)
                                             ->modalCancelActionLabel('Close')
                                             ->modalWidth('3xl')
