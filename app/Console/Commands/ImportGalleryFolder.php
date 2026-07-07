@@ -127,9 +127,10 @@ class ImportGalleryFolder extends Command
                         continue;
                     }
                     // root path
-                  Storage::disk('gallery')->put($destPath, file_get_contents($filePath));
-
-
+                    Storage::disk('public')->put(
+                        $destPath,
+                        file_get_contents($filePath)
+                    );
                     // Image creation
                     $image = GalleryImage::create([
                         'gallery_category_id' => $category->id,
