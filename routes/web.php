@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RegistrationPdfController;
 use App\Models\GalleryDay;
 use App\Models\GalleryEvent;
 use App\Models\GalleryImage;
+use Illuminate\Support\Facades\Storage;
 
 
 Route::middleware(['web', 'auth'])->group(function () {
@@ -43,3 +44,13 @@ Route::view('/Event-Registration', 'pages.Event-Registration.events-registration
 
 Route::view('/Forloop', 'pages.Login.forloop')->name('forloop');
 Route::view('/Login', 'pages.Login.login')->name('Login');
+
+
+// IMAGES
+Route::get('/uploads/registration/{folder}/{filename}', function (string $folder, string $filename) {
+    $path = "{$folder}/{$filename}";
+
+    abort_unless(Storage::disk('registration_uploads')->exists($path), 404);
+
+    return Storage::disk('registration_uploads')->response($path);
+})->where('folder', 'Discounts|ProofofPayment')->name('registration.uploads');

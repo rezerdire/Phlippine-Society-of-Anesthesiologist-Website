@@ -30,6 +30,18 @@ return [
 
     'disks' => [
 
+    // End User Uploads
+
+    'registration_uploads' => [
+        'driver' => 'local',
+        'root' => env('REGISTRATION_UPLOADS_PATH', base_path('../persistent-uploads/Registration')),
+        'url' => env('APP_URL') . '/uploads/registration',
+        'visibility' => 'public',
+        'throw' => false,
+    ],
+
+
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
