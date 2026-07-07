@@ -30,7 +30,7 @@ return [
 
     'disks' => [
 
-    // End User Uploads
+            // End User Uploads
 
     'registration_uploads' => [
         'driver' => 'local',
@@ -41,7 +41,6 @@ return [
     ],
 
     
-
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
