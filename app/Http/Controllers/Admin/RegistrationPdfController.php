@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Registration;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 
 class RegistrationPdfController extends Controller
@@ -45,7 +46,7 @@ class RegistrationPdfController extends Controller
 
         // Encode proof_payment images as base64 so dompdf can render them
         $registrations->each(function (Registration $reg) {
-            $reg->proof_payment_base64  = $this->encodeImage($reg->proof_payment);
+            $reg->proof_payment_base64 = $this->encodeImage($reg->proof_payment);
         });
 
         $pdf = Pdf::loadView('pdf.registration-export', [
@@ -67,15 +68,13 @@ class RegistrationPdfController extends Controller
             return null;
         }
 
-        $fullPath = storage_path('app/public/' . ltrim($relativePath, '/'));
-
-        if (! file_exists($fullPath)) {
+        if (! Storage::disk('registration_uploads')->exists($relativePath)) {
             return null;
         }
 
-        $mime = mime_content_type($fullPath);
-        $data = base64_encode(file_get_contents($fullPath));
+        $mime = Storage::disk('registration_uploads')->mimeType($relativePath);
+        $data = Storage::disk('registration_uploads')->get($relativePath);
 
-        return "data:{$mime};base64,{$data}";
+        return "data:{$mime};base64," . base64_encode($data);
     }
 }
