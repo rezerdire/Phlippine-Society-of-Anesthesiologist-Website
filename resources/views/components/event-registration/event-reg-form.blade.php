@@ -160,10 +160,10 @@ new class extends Component {
 
     $discountPath = null;
     if ($this->discountType === 'senior_disc' && $this->discountImg) {
-        $discountPath = $this->discountImg->store('registrations/discount-ids', 'public');
+    $discountPath = $this->discountImg->store('Discounts', 'registration_uploads');
     }
 
-    $paymentPath = $this->paymentProof->store('registrations/payment-proofs', 'public');
+    $paymentPath = $this->paymentProof->store('ProofofPayment', 'registration_uploads');
 
     // If a Rejected registration already exists for this PSA ID, update that
     // same row back to Pending instead of creating a duplicate record.
