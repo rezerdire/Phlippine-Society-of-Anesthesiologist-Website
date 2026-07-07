@@ -40,7 +40,13 @@ return [
         'throw' => false,
     ],
 
-
+    // gallery images
+    'gallery' => [
+    'driver' => 'local',
+    'root' => '/home/u179905176/domains/testpsa.online/persistent-gallery',
+    'url' => env('APP_URL') . '/gallery-files',
+    'visibility' => 'public',
+],
 
         'local' => [
             'driver' => 'local',
