@@ -18,7 +18,7 @@ class GalleryImageProcessor
 
     public function process(string $originalPath): array
     {
-        $fullPath = Storage::disk('public')->path($originalPath);
+        $fullPath = Storage::disk('gallery')->path($originalPath);
         $image = $this->manager->read($fullPath);
 
         $width = $image->width();
@@ -32,11 +32,11 @@ class GalleryImageProcessor
 
         $thumb = clone $image;
         $thumb->scaleDown(width: 480);
-        Storage::disk('public')->put($thumbPath, (string) $thumb->toWebp(70));
+Storage::disk('gallery')->put($thumbPath, (string) $thumb->toWebp(70));
 
         $large = clone $image;
         $large->scaleDown(width: 1920);
-        Storage::disk('public')->put($largePath, (string) $large->toWebp(82));
+Storage::disk('gallery')->put($largePath, (string) $large->toWebp(82));
 
         return [
             'thumb' => $thumbPath,
