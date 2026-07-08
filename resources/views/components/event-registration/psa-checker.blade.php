@@ -62,7 +62,7 @@ new class extends Component
 
                 <div class="relative">
                     <input type="text" wire:model.live.debounce.400ms="lastName"
-                        placeholder="e.g. Vacaro"
+                        placeholder="e.g. Dela Cruz"
                         class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#000066]">
                     <div wire:loading wire:target="lastName" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                         Searching...

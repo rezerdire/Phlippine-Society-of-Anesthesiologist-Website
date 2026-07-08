@@ -39,8 +39,7 @@ class RestoreGalleryFromDisk extends Command
     public function handle(): int
     {
         $dryRun = (bool) $this->option('dry-run');
-        $galleryRoot = storage_path('app/public/gallery');
-
+        $galleryRoot = config('filesystems.disks.gallery.root') . '/gallery';
         if (! is_dir($galleryRoot)) {
             $this->error("Gallery folder not found: {$galleryRoot}");
             return self::FAILURE;
