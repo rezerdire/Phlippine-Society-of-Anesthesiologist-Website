@@ -30,28 +30,7 @@ return [
 
     'disks' => [
 
-
-        // gallery server storage
-        // 'gallery' => [
-        //     'driver' => 'local',
-        //     'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
-        //     'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
-        //     'visibility' => 'public',
-        //     'throw' => false,
-        //     'report' => false,
-        // ],
         
-
-        // gallery local
-   'gallery' => [
-    'driver' => 'local',
-    'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
-    'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
-    'visibility' => 'public',
-    'throw' => false,
-    'report' => false,
-],
-
          // End User Uploads
 
     'registration_uploads' => [
@@ -73,7 +52,7 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            'root' => public_path('/'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
