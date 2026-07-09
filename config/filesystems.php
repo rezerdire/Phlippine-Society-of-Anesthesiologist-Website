@@ -43,7 +43,7 @@ return [
         
 
         // gallery local
-   'gallery' => [
+'gallery' => [
     'driver' => 'local',
     'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
     'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
@@ -52,6 +52,26 @@ return [
     'report' => false,
 ],
 
+           // gallery server storage
+        // 'gallery' => [
+        //     'driver' => 'local',
+        //     'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
+        //     'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
+        //     'visibility' => 'public',
+        //     'throw' => false,
+        //     'report' => false,
+        // ],
+        
+
+        // gallery local
+  'gallery' => [
+    'driver' => 'local',
+    'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
+    'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
+    'visibility' => 'public',
+    'throw' => false,
+    'report' => false,
+],  
          // End User Uploads
 
     'registration_uploads' => [

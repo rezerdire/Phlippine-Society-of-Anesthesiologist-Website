@@ -48,8 +48,8 @@
                             :class="{{ $i }} === current ? 'opacity-100 z-10' : 'opacity-0 z-0'"
                         >
                             <img
-                                src="{{ Storage::disk('public')->url($image->large_path) }}"
-                                class="w-full h-full object-cover"
+                        src="{{ Storage::disk('gallery')->url($image->large_path) }}"
+                            class="w-full h-full object-cover"
                                 alt="{{ $event->name }}"
                                 loading="{{ $i === 0 ? 'eager' : 'lazy' }}"
                             >
