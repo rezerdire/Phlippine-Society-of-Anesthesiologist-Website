@@ -43,7 +43,7 @@ return [
         
 
         // gallery local
-   'gallery' => [
+'gallery' => [
     'driver' => 'local',
     'root' => env('GALLERY_PATH', base_path('../persistent-gallery')),
     'url' => rtrim(env('APP_URL'), '/') . '/gallery-files',
