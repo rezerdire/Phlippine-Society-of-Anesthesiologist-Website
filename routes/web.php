@@ -54,3 +54,22 @@ Route::get('/uploads/registration/{folder}/{filename}', function (string $folder
 
     return Storage::disk('registration_uploads')->response($path);
 })->where('folder', 'Discounts|ProofofPayment')->name('registration.uploads');
+
+// gallery
+Route::get('/gallery-files/{path}', function (string $path) {
+    abort_unless(Storage::disk('gallery')->exists($path), 404);
+
+    $mimeTypes = [
+        'webp' => 'image/webp',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+    ];
+
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
+    return Storage::disk('gallery')->response($path, null, [
+        'Content-Type' => $mimeType,
+    ]);
+})->where('path', '.*')->name('gallery.files');
